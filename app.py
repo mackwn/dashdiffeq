@@ -2,6 +2,7 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+from elliptic2d import elliptic2dsolve 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -11,6 +12,8 @@ colors = {
     'background': '#111111',
     'text': '#7FDBFF'
 }
+
+xgrid,ygrid,ugrid = elliptic2dsolve(3,4,[500,500],[1000,500],.1,10,10)
 
 app.layout = html.Div(style={'backgroundColor': colors['background']},children=[
     html.H1(
@@ -31,8 +34,9 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},children=[
         id='example-graph',
         figure={
             'data': [
-                {'x': [1, 2, 3], 'y': [4, 1, 2], 'type': 'bar', 'name': 'SF'},
-                {'x': [1, 2, 3], 'y': [2, 40, 5], 'type': 'bar', 'name': u'Montréal'},
+                {'z': ugrid, 'type': 'contour', 'name': 'SF','transpose':True,
+                'x':xgrid[:,0],'y':ygrid[0,:]
+                },
             ],
             'layout': {
                 'plot_bgcolor': colors['background'],
@@ -44,6 +48,10 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},children=[
         }
     )
 ])
+
+
+
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)

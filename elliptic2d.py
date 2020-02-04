@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 #import math as mt
 #import pandas as pd
 
-def elliptic2d(xlength,ylength,ux,uy,q,m,n):
+def elliptic2dsolve(xlength,ylength,ux,uy,q,m,n):
     def centdiffd2mat2d(m,n,delx,dely):
         #mat = np.zeros((n-1,n-1))
 
@@ -102,9 +102,10 @@ def elliptic2d(xlength,ylength,ux,uy,q,m,n):
     return xgrid,ygrid,ugrid
 
 #print(uout.reshape((n-1,n-1)))
-xgrid,ygrid,ugrid = elliptic2d(3,4,[500,500],[1000,500],.1,50,50)
-plt.contourf(xgrid,ygrid,ugrid)
-plt.colorbar()
-#plt.plot(xgrid,ugrid)
-
-plt.show()
+# xgrid,ygrid,ugrid = elliptic2dsolve(3,4,[500,500],[1000,500],.1,5,5)
+# plt.contourf(xgrid,ygrid,ugrid)
+# plt.colorbar()
+# print(xgrid)
+# print(ygrid)
+# print(ugrid)
+# plt.show()
