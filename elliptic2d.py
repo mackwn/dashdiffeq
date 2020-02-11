@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 #import math as mt
 #import pandas as pd
 
-def elliptic2dsolve(xlength,ylength,ux,uy,q,m,n):
+def elliptic2dsolve(xlength,ylength,ux,uy,q,k,m,n):
     def centdiffd2mat2d(m,n,delx,dely):
         #mat = np.zeros((n-1,n-1))
 
@@ -93,7 +93,7 @@ def elliptic2dsolve(xlength,ylength,ux,uy,q,m,n):
     amatinv = np.linalg.inv(amat)
     #if test==True: print(amatinv)
 
-    k = .0001
+    #k = .0001
     uout = np.dot(amatinv,fvec*(1/k)-uovec)
     if test==True: print(uout.reshape((m-1,n-1)))
 
