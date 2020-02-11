@@ -21,7 +21,7 @@ matplotlib==3.1.2
 mccabe==0.6.1
 mkl-fft==1.0.6
 mkl-random==1.0.1.1
-mkl-service==2.3.0
+mkl
 numpy==1.18.1
 pandas==0.25.3
 plotly==4.5.0
