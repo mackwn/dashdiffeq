@@ -6,7 +6,6 @@ zlib==1.2.11
 pyqt==5.9.2
 vs2015_runtime
 markupsafe==1.1.1
-python==3.6.10
 sqlite==3.31.1
 mkl_fft==1.0.15
 tornado==6.0.3
