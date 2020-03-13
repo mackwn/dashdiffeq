@@ -62,6 +62,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},children=[
         html.Div([
 
         'u(x=0,y=y) - left side temperature',    
+        html.Div([
         dcc.Slider( #u(x=0,y=y)
             id='uox-slider',
             min=300,
@@ -69,7 +70,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},children=[
             value=500,
             marks={temp: '%s K'%temp for temp in range(300,750,50)},
             step=None
-        ), 
+        )],style={'padding': '20px 20px 20px 20px'}), 
         'u(x=f,y=y) - right side temperature',
         dcc.Slider( #u(x=f,y=y)
             id='ufx-slider',
@@ -117,7 +118,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},children=[
             step=None
         )
         ],
-        style={'width': '40%', 'padding': '0px 20px 20px 20px', 'display': 'inline-block'}) #end slider div
+        style={'width': '40%', 'padding': '20px 20px 20px 20px', 'display': 'inline-block'}) #end slider div
     ],
     style={'padding': '20px 20px 20px 20px','color': colors['text']}
     ),
