@@ -6,9 +6,9 @@ import numpy as np
 from elliptic2d import elliptic2dsolve
 from dash.dependencies import Input, Output 
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+external_stylesheets = ['https://codepen.io/chriddyp/pen/dZVMbK.css']
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__,external_stylesheets=external_stylesheets)
 server = app.server
 
 colors = {
@@ -36,6 +36,10 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},children=[
 
     html.Div([
     
+    
+    
+    
+    
     ##Div for graph
         html.Div([
             dcc.Graph(
@@ -61,61 +65,68 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},children=[
         #Div for sliders
         html.Div([
 
-        'u(x=0,y=y) - left side temperature',    
-        html.Div([
+        html.Div(['u(x=0,y=y): ',html.Span(id='uox-slider-output-container'),' K']),    
+
         dcc.Slider( #u(x=0,y=y)
             id='uox-slider',
-            min=300,
-            max=700,
+            min=200,
+            max=800,
             value=500,
-            marks={temp: '%s K'%temp for temp in range(300,750,50)},
-            step=None
-        )],style={'padding': '20px 20px 20px 20px'}), 
-        'u(x=f,y=y) - right side temperature',
+            step=25
+            #marks={temp: '%s K'%temp for temp in range(300,750,50)},
+            #step=None
+        ),
+        html.Div(['u(x=f,y=y): ',html.Span(id='ufx-slider-output-container'),' K']),
         dcc.Slider( #u(x=f,y=y)
             id='ufx-slider',
-            min=300,
-            max=700,
+            min=200,
+            max=800,
             value=500,
-            marks={temp: '%s K'%temp for temp in range(300,750,50)},
-            step=None
+            step=25,
+
+            #marks={temp: '%s K'%temp for temp in range(300,750,50)},
+            #step=None
         ),
-        'u(x=x,y=0) - bottom temperature',
+        html.Div(['u(x=x,y=0): ',html.Span(id='uoy-slider-output-container'),' K']),
         dcc.Slider( #u(x=x,y=0)
             id='uoy-slider',
-            min=300,
-            max=700,
+            min=200,
+            max=800,
             value=500,
-            marks={temp: '%s K'%temp for temp in range(300,750,50)},
-            step=None
+            step=25
+            #marks={temp: '%s K'%temp for temp in range(300,750,50)},
+            #step=None
         ), 
-        'u(x=x,y=f) - top temperature',
+        html.Div(['u(x=x,y=f): ',html.Span(id='ufy-slider-output-container'),' K']),
         dcc.Slider( #u(x=x,y=f)
             id='ufy-slider',
-            min=300,
-            max=700,
+            min=200,
+            max=800,
             value=500,
-            marks={temp: '%s K'%temp for temp in range(300,750,50)},
-            step=None
+            step=25
+            #marks={temp: '%s K'%temp for temp in range(300,750,50)},
+            #step=None
         ),
-        'q - heat flux',
+        html.Div(['q: ',html.Span(id='heatflux-slider-output-container'),' mW/m\u00B2']),
         dcc.Slider(
             id='heatflux-slider',
             min=0,
             max=1,
-            value=.1,
-            marks={flux: '%s mW/m\u00B2'%int(round(flux*1000,0)) for flux in np.linspace(0,1.1,10)},
-            step=None
+            step=.05,
+            value=.5
+            #marks={flux: '%s mW/m\u00B2'%int(round(flux*1000,0)) for flux in np.linspace(0,1.1,10)},
+            #step=None
         ), 
-        'k - conductivity',
+        html.Div(['k: ',html.Span(id='conductivity-slider-output-container'),' mW/K']),
         dcc.Slider(
             id='conductivity-slider',
             min=.00001,
-            max=.001,
-            value=.0001,
-            marks={cond: '%s mW/K'%round(cond*1000,2) for cond in np.linspace(.00001,.001,10)},
+            max=.00101,
+            value=.00051,
+            step=.00005
+            #marks={cond: '%s mW/K'%round(cond*1000,2) for cond in np.linspace(.00001,.001,10)},
             #marks={'label': str(round(cond,5)) for cond in np.linspace(.00001,.001,10)},
-            step=None
+            #step=None
         )
         ],
         style={'width': '40%', 'padding': '20px 20px 20px 20px', 'display': 'inline-block'}) #end slider div
@@ -124,6 +135,14 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},children=[
     ),
 
 ])
+
+
+for slider in ['uox-slider','ufx-slider','uoy-slider','ufy-slider','heatflux-slider','conductivity-slider']:
+    @app.callback(
+        Output('%s-output-container'%slider, 'children'),
+        [Input(slider, 'value')])
+    def update_output(value):
+        return value
 
 @app.callback(
     Output('elliptic-graph','figure'),
