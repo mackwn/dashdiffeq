@@ -52,15 +52,43 @@ def render_slider(label,vmin,vmax,symbol,units): ###rewrite this to only do the 
         ])
     return output 
 
-
+def render_contourplot(xgrid,ygrid,ugrid):
+    output = dcc.Graph(
+        id='elliptic-graph',
+        figure={
+            'data': [
+                {'z': ugrid, 'type': 'surface', 'name': 'SF','transpose':True,
+                'x':xgrid[:,0],'y':ygrid[0,:]
+                },
+            ],
+            'layout': {
+                # 'plot_bgcolor': colors['background'],
+                # 'paper_bgcolor': colors['background'],
+                # 'font': {
+                #     'color': colors['text']
+                # },
+                'template':'plotly_dark',
+                'margin': dict(l=10, r=10, b=10, t=10)
+            }
+        }
+    )
+    return output
 
 app.layout = dbc.Container([
     dbc.Row([
+        dbc.Col([
+            html.H3('2D Elliptical Heat Equation')
+        ],md=6,sm=12),
+        dbc.Col([
+            html.H3('q = -k\u2207\u00B2')
+        ],md=6,sm=12)
+    ]),
+    dbc.Row([
         dbc.Col( #Graph 
-            'graph',
+            [render_contourplot(xgrid=xgrid,ygrid=ygrid,ugrid=ugrid)],
             md=6,sm=12
         ),
-        dbc.Col([
+        dbc.Col([dbc.Row(dbc.Col([html.H5('Boundary Conditions & Parameters')],width=12))]+[
             render_slider(label=key,vmin=value[0],vmax=value[1],
                 symbol=value[2],units=value[3]) for key, value in slider_labels.items() # rainbows
         ],
@@ -209,26 +237,37 @@ for slider in ['uox-slider','ufx-slider','uoy-slider','ufy-slider','heatflux-sli
     def update_output(value):
         return value
 
-# @app.callback(
-#     Output('elliptic-graph','figure'),
-#     [Input('uox-slider','value'),
-#     Input('ufx-slider','value'),
-#     Input('uoy-slider','value'),
-#     Input('ufy-slider','value'),
-#     Input('heatflux-slider','value'),
-#     Input('conductivity-slider','value'),
+@app.callback(
+    Output('elliptic-graph','figure'),
+    [Input('uox-slider','value'),
+    Input('ufx-slider','value'),
+    Input('uoy-slider','value'),
+    Input('ufy-slider','value'),
+    Input('heatflux-slider','value'),
+    Input('conductivity-slider','value'),
     
-#     ]
-# )
-# def update_figure(uox,ufx,uoy,ufy,flux,conduc):
-#     xgrid,ygrid,ugrid = elliptic2dsolve(3,4,[uoy,ufy],[uox,ufx],flux,conduc,10,10)
-#     return {
-#         'data': [
-#                     {'z': ugrid, 'type': 'contour', 'name': 'SF','transpose':True,
-#                     'x':xgrid[:,0],'y':ygrid[0,:]
-#                     }
-#         ]
-#     }
+    ]
+)
+def update_figure(uox,ufx,uoy,ufy,flux,conduc):
+    xgrid,ygrid,ugrid = elliptic2dsolve(3,4,[uoy,ufy],[uox,ufx],flux,conduc,10,10)
+    return {
+        'data': [
+                    {'z': ugrid, 'type': 'surface', 'name': 'Temperature Surface','transpose':True,
+                    'x':xgrid[:,0],'y':ygrid[0,:]
+                    }
+        ],
+        'layout': {
+            # 'plot_bgcolor': colors['background'],
+            # 'paper_bgcolor': colors['background'],
+            # 'font': {
+            #     'color': colors['text']
+            # },
+            'margin': dict(l=10, r=10, b=10, t=10),
+            'template':"plotly_dark"
+
+        }
+        
+    }
     
 
 
