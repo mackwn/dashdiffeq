@@ -19,7 +19,7 @@ colors = {
 
 xgrid,ygrid,ugrid = elliptic2dsolve(3,4,[500,500],[1000,500],.1,.0001,10,10)
 
-slider_labels = {#id:[min,max,symbol,unit]
+slider_labels = {#label:[min,max,symbol,unit]
     'uox':[200,800,'u(x=0,y=y)','K'],
     'ufx':[200,800,'u(x=f,y=y)','K'],
     'uoy':[200,800,'u(x=x,y=0)','K'],
@@ -28,33 +28,31 @@ slider_labels = {#id:[min,max,symbol,unit]
     'conductivity':[.00001,.00101,'k','mW/K']
 }
 
-def render_sliders(slider_labels):
-    output = []
-    for key,value in slider_labels.items():
-        print(key,value)
-        output.append(
-            dbc.Row([
-                dbc.Col(
-                    dbc.Badge([
-                        '{symbol}: '.format(symbol=value[2]),
-                        html.Span(id='{label}-slider-output-container'.format(label=key)),
-                        ' {units}'.format(units=value[3])
-                    ],color='primary',className='slider-labels'),
-                    width = 3
+def render_slider(label,vmin,vmax,symbol,units): ###rewrite this to only do the slider formating, and then use list comprehension instead of for loop
+
+    output = dbc.Row([
+            dbc.Col(
+                dbc.Badge([
+                    '{symbol}: '.format(symbol=symbol),
+                    html.Span(id='{label}-slider-output-container'.format(label=label)),
+                    ' {units}'.format(units=units)
+                ],color='primary',className='slider-labels'),
+                width = 3
+            ),
+            dbc.Col(
+                dcc.Slider(
+                    id='{label}-slider'.format(label=label),
+                    min = vmin,
+                    max = vmax,
+                    value = (vmin+vmax)/2,
+                    step = (vmax-vmin)/10
                 ),
-                dbc.Col(
-                    dcc.Slider(
-                        id='{label}-slider'.format(label=key),
-                        min = value[0],
-                        max = value[1],
-                        value = (value[0]+value[1])/2,
-                        step = (value[1]-value[0])/10
-                    ),
-                    width = 9
-                )
-            ])
-        )
+                width = 9
+            )
+        ])
     return output 
+
+
 
 app.layout = dbc.Container([
     dbc.Row([
@@ -62,10 +60,10 @@ app.layout = dbc.Container([
             'graph',
             md=6,sm=12
         ),
-        
-        dbc.Col(
-            render_sliders(slider_labels) # rainbows
-            ,
+        dbc.Col([
+            render_slider(label=key,vmin=value[0],vmax=value[1],
+                symbol=value[2],units=value[3]) for key, value in slider_labels.items() # rainbows
+        ],
             md=6,sm=12
         )
     ])
