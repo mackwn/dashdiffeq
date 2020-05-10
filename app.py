@@ -46,7 +46,8 @@ def render_slider(label,vmin,vmax,symbol,units):
                     min = vmin,
                     max = vmax,
                     value = (vmin+vmax)/2,
-                    step = (vmax-vmin)/10
+                    step = (vmax-vmin)/10,
+                    className = 'input-slider'
                 ),
                 width = 9
             )
