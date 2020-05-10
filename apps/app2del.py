@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 from navbar import navbar
-
+from helpers import render_slider
 from app import app
 
 colors = {
@@ -26,30 +26,7 @@ slider_labels = {#label:[min,max,symbol,unit]
     'conductivity':[.00001,.00101,'k','mW/K']
 }
 
-def render_slider(label,vmin,vmax,symbol,units): 
-
-    output = dbc.Row([
-            dbc.Col(
-                dbc.Badge([
-                    '{symbol}: '.format(symbol=symbol),
-                    html.Span(id='{label}-slider-output-container'.format(label=label)),
-                    ' {units}'.format(units=units)
-                ],color='primary',className='slider-labels'),
-                width = 3
-            ),
-            dbc.Col(
-                dcc.Slider(
-                    id='{label}-slider'.format(label=label),
-                    min = vmin,
-                    max = vmax,
-                    value = (vmin+vmax)/2,
-                    step = (vmax-vmin)/10,
-                    className = 'input-slider'
-                ),
-                width = 9
-            )
-        ])
-    return output 
+ 
 
 def render_surfaceplot(xgrid,ygrid,ugrid):
 
