@@ -51,7 +51,7 @@ def parab1dimp(xlength,delt,n,uo,uto,ufper,k):
     ###Temporal grid
     #tgrid = np.linspace(0,tspan,tsteps+1)
     #delt = abs(tgrid[0]-tgrid[1])
-    print('delt:',delt)
+    #print('delt:',delt)
     #if test == True: print('tgrid',tgrid)
     ugrid[1:-1] = uto
 
@@ -78,17 +78,18 @@ def parab1dimp(xlength,delt,n,uo,uto,ufper,k):
         invmat = np.linalg.inv((idmat+delt*amat))
         ugrid1[1:-1] = np.dot(invmat,ugrid0[1:-1]-bcvec*delt)
         ugrid0=ugrid1
-        if i < 10:
-            plt.plot(xgrid,ugrid1)
+        #if i < 10:
+            #plt.plot(xgrid,ugrid1)
         #if i<250:
         # if i%50==0:plt.plot(xgrid,ugrid1)
-        elif i%250==0: 
-            plt.plot(xgrid,ugrid1)
+       # elif i%250==0: 
+            #plt.plot(xgrid,ugrid1)
         # print('uavg:',ugrid1.mean())
         i+=1
         ugrid_out = np.row_stack((ugrid_out,ugrid0))
 
-    plt.show()
+    #plt.show()
     return xgrid,ugrid_out
+
 
 xgrid, ugrid_out = parab1dimp(xlength,delt,n,uo,uto,ufper,k)  
