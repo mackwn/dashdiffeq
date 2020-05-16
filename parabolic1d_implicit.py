@@ -8,18 +8,9 @@ Created on Sun Jul  7 13:07:24 2019
 import numpy as np
 import matplotlib.pyplot as plt
 
-xlength = 70
-tspan = 100
-tsteps = 300
-n = 100
-uo = 1
-uf = 500
-uto = 500
-k=1
-delt = .333
-ufper = .7
 
-def parab1dimp(xlength,delt,n,uo,uto,ufper,k):
+
+def parab1dimp(xlength,delt,n,uo_per,uto,ufper,k):
 
     def centdiffd2mat(n):
         #mat = np.zeros((n-1,n-1))
@@ -28,19 +19,19 @@ def parab1dimp(xlength,delt,n,uo,uto,ufper,k):
         mat = np.diagflat(diag) + np.diagflat(diag_1,k=1) + np.diagflat(diag_1,k=-1)
         return mat
         
-    def genbcvec(n,delx,uo,uf):
+    def genbcvec(n,delx,uo,uf,k):
         bcvec = np.zeros(n-1)
         bcvec[0] = -uo
         bcvec[-1] = -uf
-        return bcvec*(1/delx**2)
+        return bcvec*(k/delx**2)
 
-    def dx2elliptic1d(x):
-        return x**2
 
     test = False ##bring commands to debugging
 
-
+    #set u at x=0 based on percentage of initial temp
+    uo = uo_per * uto
     ###Spatial grid
+    n = int(round(n))
     xgrid = np.linspace(0,xlength,n+1)
     delx = abs(xgrid[0]-xgrid[1])
     ugrid = np.zeros(n+1)
@@ -56,7 +47,7 @@ def parab1dimp(xlength,delt,n,uo,uto,ufper,k):
     ugrid[1:-1] = uto
 
     ###Create A matrix
-    amat = centdiffd2mat(n) * 1/(delx**2) ##calculate matrix assuming central difference for 2nd deriv
+    amat = centdiffd2mat(n) * k/(delx**2) ##calculate matrix assuming central difference for 2nd deriv
     if test==True: print(centdiffd2mat(n))
     if test==True: print(amat)
 
@@ -68,12 +59,12 @@ def parab1dimp(xlength,delt,n,uo,uto,ufper,k):
     uf = uto
     ugrid_out = ugrid0
 
-    while (uf/uto > ufper) and (i<maxtsteps):
+    while ((uf-uo)/(uto-uo) > ufper) and (i<maxtsteps):
         #ugrid0 = ugrid1
         ugrid1 = ugrid0
         uf= ugrid0[-2] #no flow boundary
         ugrid1[-1] = uf
-        bcvec = genbcvec(n,delx,uo,uf)
+        bcvec = genbcvec(n,delx,uo,uf,k)
         idmat = np.diagflat(np.zeros(n-1)+1)
         invmat = np.linalg.inv((idmat+delt*amat))
         ugrid1[1:-1] = np.dot(invmat,ugrid0[1:-1]-bcvec*delt)
@@ -91,5 +82,22 @@ def parab1dimp(xlength,delt,n,uo,uto,ufper,k):
     #plt.show()
     return xgrid,ugrid_out
 
-
-xgrid, ugrid_out = parab1dimp(xlength,delt,n,uo,uto,ufper,k)  
+if __name__ == "__main__":
+    xlength = 70
+    tspan = 100
+    tsteps = 300
+    n = 100
+    uo_per = .2
+    uf = 500
+    uto = 500
+    k=.5
+    delt = .5
+    ufper = .7
+    xgrid, ugrid_out = parab1dimp(xlength,delt,n,uo_per,uto,ufper,k)  
+    print(xgrid)
+    print(ugrid_out)
+    tframes = list(range(0,len(ugrid_out[:,0]),100))
+    for tframe in tframes:
+        plt.plot(xgrid,ugrid_out[tframe,:])
+    print(ugrid_out.shape)
+    plt.show()

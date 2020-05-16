@@ -1,6 +1,3 @@
-
-
-
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -14,24 +11,33 @@ from helpers import render_slider
 from app import app
 
 initial_condition_labels = {#label:[min,max,symbol,unit]
-    'uox1d':[200,800,'u(x=x,t=0)','K'],
+    'uox1d_per':[5,90,'u(x=x,t=0)','%'],
     'ui':[200,800,'u(x=0,t=t)','K'],
-    'cond1d':[.00001,.00101,'k','mW/K']
+    'cond1d':[.5,1.5,'k','W/Km']
     }
 grid_setup_labels = {
-    'xlength':[10,110,'X','m'],
-    'xsteps':[5,55,'delX','m'],
+    'xlength':[20,100,'X','m'],
+    'xsteps':[5,55,'X steps',''],
     'tspan':[20,90,'%'+'ui','%'],
-    'tsteps':[.1,2,'delt','s']
+    'tsteps':[.5,1.5,'delt','s']
 }
 
-def render_line_graph(xgrid,ugrid):
-    #print(ugrid.shape)
+#initla simulation based on default parm settings
+parms = [(value[0]+value[1])/2 for key,value in initial_condition_labels.items()]+[
+    (value[0]+value[1])/2 for key,value in grid_setup_labels.items()]
+uox1d_per,ui,cond1d,xlength,xsteps,tspan,tstep = parms
+xgrid,ugrid = parab1dimp(xlength=xlength,delt=tstep,n=xsteps,uo_per=uox1d_per/100,uto=ui,ufper=tspan/100,k=cond1d)
+
+
+def render_line_graph(xgrid,ugrid,tstep):
+    #break the simulation output into 20 steps
     tframes = list(range(0,len(ugrid[:,0]),int(len(ugrid[:,0])/20)))
     figure = go.Figure(
         data = go.Scatter(
             #tframes = list(range(0,len(ugrid[:,0]),len(ugrid[:,0])/20))
-            x=xgrid,y=ugrid[0,:]
+            x=xgrid,y=ugrid[0,:],
+            mode='lines+markers'
+            
             #colorbar=dict(
                 #   title='Temp. (K)'
                 #  )
@@ -39,13 +45,15 @@ def render_line_graph(xgrid,ugrid):
         layout = go.Layout(
             template="plotly_dark",
             margin= dict(l=40, r=10, b=40, t=10),
-            scene=dict(xaxis_title="X (m)",
-            yaxis_title="Y (m)",
-            zaxis_title="Temp. (K)"),
+            xaxis_title="X (m)",
+            yaxis_title="Temp. (K)",
+            yaxis = dict(rangemode = 'tozero')
             ),
+        #animation frames
         frames = [go.Frame(data=[go.Scatter(x=xgrid,y=ugrid[tframe,:])],name=str(t)) for t,tframe in enumerate(tframes)]
     )
-
+    #Play and pause button 
+    ###using gapminder example as template https://plotly.com/python/v3/gapminder-example/
     figure['layout']['updatemenus'] = [
     {
         'buttons': [
@@ -72,6 +80,7 @@ def render_line_graph(xgrid,ugrid):
         'yanchor': 'top'
     }
     ]
+    #Generate slider steps
     steps = [
     {
         # 'method': 'animate',
@@ -82,17 +91,18 @@ def render_line_graph(xgrid,ugrid):
         'args':[
             [t],{'frame': {'duration':300,'redraw': False},'mode':'immediate','transition':{'duration':0}}
         ],
-        'label': t,
+        'label': '{seconds}'.format(seconds=round(tframe*tstep,2)),
         'method':'animate'
     } for t,tframe in enumerate(tframes)
     ]
+    #Slider formatting
     sliders_dict = {
     'active': 0,
     'yanchor': 'top',
     'xanchor': 'left',
     'currentvalue': {
-        'font': {'size': 20},
-        'prefix': 'Year:',
+        'font': {'size': 14},
+        'prefix': 'Seconds:',
         'visible': True,
         'xanchor': 'right'
     },
@@ -105,25 +115,27 @@ def render_line_graph(xgrid,ugrid):
     }
     sliders_dict['steps'] = steps
     figure['layout']['sliders'] = [sliders_dict]
+
     return figure
 
 layout = dbc.Container([
     navbar,
-    dbc.Row([ #heading row
+    #heading row
+    dbc.Row([ 
         dbc.Col([
             html.H3('1D Parabolic Heat Equation')
         ],md=6,sm=12),
         dbc.Col([
-            html.H3('dq/dt = -k\u2207\u00B2')
+            html.H3('\u2202q/\u2202t = -k\u2202\u00B2u/\u2202x\u00B2')
         ],md=6,sm=12)
     ]),
-    dbc.Row([ #container for graph col and input cols
-        dbc.Col([ #graph column
-            # [dcc.Graph(
-            #     figure=render_surfaceplot(xgrid=xgrid,ygrid=ygrid,ugrid=ugrid),id='elliptic-graph'
-            #     )]
-            dcc.Graph(figure=go.Figure(),id='parabolic1d-graph')
+    #container for graph col and input cols
+    dbc.Row([ 
+        #graph column
+        dbc.Col([ 
+            dcc.Graph(figure=render_line_graph(xgrid,ugrid,tstep) ,id='parabolic1d-graph')
         ],sm=12,md=6),
+        #Parameters
         dbc.Col(
             [dbc.Row(dbc.Col([html.H5('Boundary Conditions & Parameters')],width=12))]
             +
@@ -138,7 +150,7 @@ layout = dbc.Container([
     ])
 ])
 
-
+#Call back to update the slider label with the slider value (since sliders have no tick labels)
 for slider in [key+'-slider' for key in initial_condition_labels.keys()] + [key+'-slider' for key in grid_setup_labels.keys()]:
     @app.callback(
         Output('{slider}-output-container'.format(slider=slider),'children'),
@@ -147,34 +159,17 @@ for slider in [key+'-slider' for key in initial_condition_labels.keys()] + [key+
     def update_output(value):
         return value
 
-
+#Call back to rerun the simulation with the slider inputs
 @app.callback(
     Output('parabolic1d-graph','figure'),
     [Input(key+'-slider','value') for key in initial_condition_labels.keys()]+
     [Input(key+'-slider','value') for key in grid_setup_labels.keys()]
 
 )
-def update_figure(uox1d,ui,cond1d,xlength,xsteps,tspan,tstep):
+def update_figure(uox1d_per,ui,cond1d,xlength,xsteps,tspan,tstep):
     #parab1dimp(xlength,delt,n,uo,uto,ufper,k)
-    print("initiate solver")
-    xgrid,ugrid = parab1dimp(xlength=xlength,delt=tstep,n=xsteps,uo=uox1d,uto=ui,ufper=tspan/100,k=cond1d)
-    print("solver finished")
-    return render_line_graph(xgrid,ugrid) 
+    #print("initiate solver")
+    xgrid,ugrid = parab1dimp(xlength=xlength,delt=tstep,n=xsteps,uo_per=uox1d_per/100,uto=ui,ufper=tspan/100,k=cond1d)
+    #print("solver finished")
+    return render_line_graph(xgrid,ugrid,tstep) 
     
-# initial_condition_labels = {#label:[min,max,symbol,unit]
-#     'uox1d':[200,800,'u(x=x,t=0)','K'],
-#     'ui':[200,800,'u(x=0,t=t)','K'],
-#     'cond1d':[.00001,.00101,'k','mW/K']
-#     }
-# grid_setup_labels = {
-#     'xlength':[10,110,'X','m'],
-#     'xsteps':[5,55,'delX','m'],
-#     'tspan':[0,100,'%'+'ui','%'],
-#     'tsteps':[5,55,'delt','s']
-# for slider in ['uox-slider','ufx-slider','uoy-slider','ufy-slider','heatflux-slider','conductivity-slider']:
-#     @app.callback(
-#         Output('%s-output-container'%slider, 'children'),
-#         [Input(slider, 'value')])
-#     def update_output(value):
-#         return value
-
