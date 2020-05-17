@@ -6,8 +6,8 @@ navbar = dbc.NavbarSimple(
         dbc.DropdownMenu(
             children=[
                 #dbc.DropdownMenuItem("Apps", header=True),
-                dbc.DropdownMenuItem("2D Elliptical", href="/apps/app2del"),
-                dbc.DropdownMenuItem("1D Parabolic", href="/apps/app1dpar"),
+                dbc.DropdownMenuItem("2D Elliptical", href="/app2del"),
+                dbc.DropdownMenuItem("1D Parabolic", href="/app1dpar"),
             ],
             nav=True,
             in_navbar=True,
