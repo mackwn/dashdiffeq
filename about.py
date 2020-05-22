@@ -8,7 +8,7 @@ from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 #import plotly.graph_objects as go
 from navbar import navbar
-from app import app
+from app import app, server
 
 layout = dbc.Container([
     navbar,

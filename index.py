@@ -4,13 +4,12 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import os
 
-from app import app
-#from app import server
+from app import app, server
+
 from apps import app2del, app1dpar
 import about
 
-server = app.server
-server.secret_key = os.environ.get('secret_key', 'secret')
+
 
 print('made it into index, server assigned')
 

@@ -8,7 +8,7 @@ import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 from navbar import navbar
 from helpers import render_slider
-from app import app
+from app import app, server
 
 colors = {
     'background': '#111111',
