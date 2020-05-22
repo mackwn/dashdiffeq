@@ -12,19 +12,20 @@ import about
 server = app.server
 server.secret_key = os.environ.get('secret_key', 'secret')
 
-app.layout = html.Div([
-    dcc.Location(id='url', refresh=False),
-    html.Div(id='page-content')
-])
+print('made it into index, server assigned')
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     html.Div(id='page-content')
 ])
+
+print('assigned layout')
+#print('url:')
 
 @app.callback(Output('page-content','children'),
                 [Input('url','pathname')])
 def display_page(pathname):
+    print('pathname:{pathname}'.format(pathname=pathname))
     if pathname == '/app2del': return  app2del.layout
     elif pathname == '/app1dpar': return app1dpar.layout
     elif pathname == '/' : return about.layout
