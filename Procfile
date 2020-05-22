@@ -1,1 +1,1 @@
-web: gunicorn index:server --log-file - --log-level debug
+web: gunicorn index:server --log-file - --log-level debug --timeout 90
