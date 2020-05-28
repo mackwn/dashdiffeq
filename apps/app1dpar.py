@@ -34,6 +34,7 @@ parms = [(value[0]+value[1])/2 for key,value in initial_condition_labels.items()
 uox1d_per,ui,cond1d,xlength,xsteps,tspan,tstep = parms
 xgrid,ugrid = parab1dimp(xlength=xlength,delt=tstep,n=xsteps,uo_per=uox1d_per/100,uto=ui,ufper=tspan/100,k=cond1d)
 
+print('made it past set up in 1dpar')
 
 def render_line_graph(xgrid,ugrid,tstep):
     #break the simulation output into 20 steps
@@ -124,6 +125,7 @@ def render_line_graph(xgrid,ugrid,tstep):
 
     return figure
 
+print('made it past render line graph')
 layout = dbc.Container([
     navbar,
     #heading row
@@ -156,6 +158,7 @@ layout = dbc.Container([
     ])
 ])
 
+print('made it past layout')
 #Call back to update the slider label with the slider value (since sliders have no tick labels)
 for slider in [key+'-slider' for key in initial_condition_labels.keys()] + [key+'-slider' for key in grid_setup_labels.keys()]:
     @app.callback(
@@ -179,3 +182,4 @@ def update_figure(uox1d_per,ui,cond1d,xlength,xsteps,tspan,tstep):
     #print("solver finished")
     return render_line_graph(xgrid,ugrid,tstep) 
     
+print('made it past callbacks in app1dpar')
