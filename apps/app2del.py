@@ -1,14 +1,21 @@
+print('inside app2del')
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import numpy as np
-from elliptic2d import elliptic2dsolve
 from dash.dependencies import Input, Output 
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
-from navbar import navbar
-from helpers import render_slider
+print('imported dependencies')
+print('import app')
 from app import app, server
+print('importing elliptic2d')
+from elliptic2d import elliptic2dsolve
+print('import navbar')
+from navbar import navbar
+print('import helpers')
+from helpers import render_slider
+
 
 colors = {
     'background': '#111111',
