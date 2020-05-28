@@ -1,3 +1,4 @@
+print('in app1dpar')
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -6,9 +7,14 @@ from parabolic1d_implicit import parab1dimp
 from dash.dependencies import Input, Output 
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
+print('imported dependencies')
+print('import navbar')
 from navbar import navbar
+print('import helpers')
 from helpers import render_slider
+print('import app')
 from app import app, server
+print('imported everything for app1dpar')
 
 initial_condition_labels = {#label:[min,max,symbol,unit]
     'uox1d_per':[5,90,'u(x=x,t=0)','%'],

@@ -15,7 +15,7 @@ print('import navbar')
 from navbar import navbar
 print('import helpers')
 from helpers import render_slider
-
+print('imported everything for app2del')
 
 colors = {
     'background': '#111111',
