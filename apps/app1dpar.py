@@ -28,10 +28,13 @@ grid_setup_labels = {
     'tsteps':[.5,1.5,'delt','s']
 }
 
+print('made it past slide settings in app1dpar')
 #initla simulation based on default parm settings
 parms = [(value[0]+value[1])/2 for key,value in initial_condition_labels.items()]+[
     (value[0]+value[1])/2 for key,value in grid_setup_labels.items()]
+print('made it past parms list')
 uox1d_per,ui,cond1d,xlength,xsteps,tspan,tstep = parms
+print('made it past assign parms')
 xgrid,ugrid = parab1dimp(xlength=xlength,delt=tstep,n=xsteps,uo_per=uox1d_per/100,uto=ui,ufper=tspan/100,k=cond1d)
 
 print('made it past set up in 1dpar')

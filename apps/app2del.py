@@ -104,3 +104,4 @@ def update_figure(uox,ufx,uoy,ufy,flux,conduc):
 
     return render_surfaceplot(xgrid,ygrid,ugrid)
     
+print('made it out of app2del.py')
