@@ -35,14 +35,14 @@ parms = [(value[0]+value[1])/2 for key,value in initial_condition_labels.items()
 print('made it past parms list')
 uox1d_per,ui,cond1d,xlength,xsteps,tspan,tstep = parms
 print('made it past assign parms')
-try:
-    xgrid,ugrid = parab1dimp(xlength=xlength,delt=tstep,n=xsteps,uo_per=uox1d_per/100,uto=ui,ufper=tspan/100,k=cond1d)
-except Exception as inst:
-    print(type(inst))    # the exception instance
-    print(inst.args)     # arguments stored in .args
-    print(inst) 
-    xgrid = np.linspace(1,10)
-    ugrid = xgrid
+# try:
+#     xgrid,ugrid = parab1dimp(xlength=xlength,delt=tstep,n=xsteps,uo_per=uox1d_per/100,uto=ui,ufper=tspan/100,k=cond1d)
+# except Exception as inst:
+#     print(type(inst))    # the exception instance
+#     print(inst.args)     # arguments stored in .args
+#     print(inst) 
+#     xgrid = np.linspace(1,10)
+#     ugrid = xgrid
     
 
 print('made it past set up in 1dpar')
@@ -152,7 +152,7 @@ layout = dbc.Container([
     dbc.Row([ 
         #graph column
         dbc.Col([ 
-            dcc.Graph(figure=render_line_graph(xgrid,ugrid,tstep) ,id='parabolic1d-graph')
+            dcc.Graph(figure=go.Figure() ,id='parabolic1d-graph')
         ],sm=12,md=6),
         #Parameters
         dbc.Col(
