@@ -55,7 +55,7 @@ def parab1dimp(xlength,delt,n,uo_per,uto,ufper,k):
     ugrid0 = ugrid
 
     i=0
-    maxtsteps = 100
+    maxtsteps = 50000
     #ufper=.25
     uf = uto
     ugrid_out = ugrid0
