@@ -13,7 +13,7 @@ from navbar import navbar
 print('import helpers')
 from helpers import render_slider
 print('import app')
-from app import app, server
+from app import app
 print('imported everything for app1dpar')
 
 initial_condition_labels = {#label:[min,max,symbol,unit]

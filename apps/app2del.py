@@ -8,7 +8,7 @@ import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 print('imported dependencies')
 print('import app')
-from app import app, server
+from app import app
 print('importing elliptic2d')
 from elliptic2d import elliptic2dsolve
 print('import navbar')
