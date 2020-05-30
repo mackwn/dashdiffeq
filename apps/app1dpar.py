@@ -23,9 +23,9 @@ initial_condition_labels = {#label:[min,max,symbol,unit]
     }
 grid_setup_labels = {
     'xlength':[20,100,'X','m'],
-    'xsteps':[5,55,'X steps',''],
+    'xsteps':[3,12,'X steps',''],
     'tspan':[20,90,'%'+'ui','%'],
-    'tsteps':[.5,1.5,'delt','s']
+    'tsteps':[10,30,'delt','s']
 }
 
 print('made it past slide settings in app1dpar')
