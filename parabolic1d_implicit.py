@@ -28,6 +28,7 @@ def parab1dimp(xlength,delt,n,uo_per,uto,ufper,k):
 
     test = False ##bring commands to debugging
 
+    print('past imports')
     #set u at x=0 based on percentage of initial temp
     uo = uo_per * uto
     ###Spatial grid
@@ -38,7 +39,7 @@ def parab1dimp(xlength,delt,n,uo_per,uto,ufper,k):
     ugrid[0]= uo
     ugrid[-1] = uto
     if test==True: print('xgrid',xgrid)
-
+    print('grids set up')
     ###Temporal grid
     #tgrid = np.linspace(0,tspan,tsteps+1)
     #delt = abs(tgrid[0]-tgrid[1])
@@ -50,7 +51,7 @@ def parab1dimp(xlength,delt,n,uo_per,uto,ufper,k):
     amat = centdiffd2mat(n) * k/(delx**2) ##calculate matrix assuming central difference for 2nd deriv
     if test==True: print(centdiffd2mat(n))
     if test==True: print(amat)
-
+    print('set up a mat')
     ugrid0 = ugrid
 
     i=0
@@ -59,6 +60,7 @@ def parab1dimp(xlength,delt,n,uo_per,uto,ufper,k):
     uf = uto
     ugrid_out = ugrid0
 
+    print('time loop started')
     while ((uf-uo)/(uto-uo) > ufper) and (i<maxtsteps):
         #ugrid0 = ugrid1
         ugrid1 = ugrid0
@@ -80,6 +82,7 @@ def parab1dimp(xlength,delt,n,uo_per,uto,ufper,k):
         ugrid_out = np.row_stack((ugrid_out,ugrid0))
 
     #plt.show()
+    #finished time loop
     return xgrid,ugrid_out
 
 if __name__ == "__main__":

@@ -49,6 +49,7 @@ print('made it past set up in 1dpar')
 
 def render_line_graph(xgrid,ugrid,tstep):
     #break the simulation output into 20 steps
+    print('start rendering line graph')
     tframes = list(range(0,len(ugrid[:,0]),int(len(ugrid[:,0])/20)))
     figure = go.Figure(
         data = go.Scatter(
@@ -70,6 +71,7 @@ def render_line_graph(xgrid,ugrid,tstep):
         #animation frames
         frames = [go.Frame(data=[go.Scatter(x=xgrid,y=ugrid[tframe,:])],name=str(t)) for t,tframe in enumerate(tframes)]
     )
+    print('animation frames assigned')
     #Play and pause button 
     ###using gapminder example as template https://plotly.com/python/v3/gapminder-example/
     figure['layout']['updatemenus'] = [
@@ -98,6 +100,7 @@ def render_line_graph(xgrid,ugrid,tstep):
         'yanchor': 'top'
     }
     ]
+    print('menu buttons done')
     #Generate slider steps
     steps = [
     {
@@ -113,6 +116,7 @@ def render_line_graph(xgrid,ugrid,tstep):
         'method':'animate'
     } for t,tframe in enumerate(tframes)
     ]
+    print('steps done')
     #Slider formatting
     sliders_dict = {
     'active': 0,
@@ -133,7 +137,7 @@ def render_line_graph(xgrid,ugrid,tstep):
     }
     sliders_dict['steps'] = steps
     figure['layout']['sliders'] = [sliders_dict]
-
+    print('figure finished')
     return figure
 
 print('made it past render line graph')
