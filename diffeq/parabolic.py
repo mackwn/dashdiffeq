@@ -13,7 +13,8 @@ class parabolic1d():
         if n < 2: raise ValueError('n must be equal or greater than 2')  
         if not .0001 < k < 1000: raise ValueError('k must be between .0001W/m^2 and 1,000W/m^2')
         if uo > uto: raise ValueError('uo (x=0, t=t) must be greater than uto (x=x, t=0)')
-        if not uo < uf < uto: raise ValueError('uf (x=X, t=t) must be between uo (x=0, t=t) and uto (x=x,t=0)')
+        #if not uo < uf < uto: raise ValueError('uf (x=X, t=t) must be between uo (x=0, t=t) and uto (x=x,t=0)')
+
 
         ### assignments
         self.n = n
@@ -33,28 +34,26 @@ class parabolic1d():
 
     def _genbcvec(self):
         bcvec = np.zeros(self.n-1)
-        bcvec[0] = -self.nuo
-        bcvec[-1] = -self.nuf
+        bcvec[0] = -self.uo
+        bcvec[-1] = -self.uf
         return bcvec
 
 
     def _setup_ugrid(self):
         ugrid = np.zeros(self.n+1)
         ugrid[0]= self.uo
-        ugrid[1:-1] = self.uto
-        self.ugridd
+        ugrid[1:] = self.uto
+        self.ugrid = ugrid
 
-    def _setup_matrices(self):
-
-        self.xgrid = np.linspace(0,xlength,self.n+1)
+    def _setup_xgrid(self):
+        self.xgrid = np.linspace(0,self.xlength,self.n+1)
         self.delx = abs(self.xgrid[0]-self.xgrid[1])
-        self.amat = self._centdiffd2mat() * self.k/(self.delx**2)
-        self.bcvec = self._genbcvec() * (self.k/self.delx**2)
+        
 
    
     def _implicit_timestep(self,ugrid):
         idmat = np.diagflat(np.zeros(self.n-1)+1)
-        invmat = np.linalg.inv((idmat+delt*self.amat))
+        invmat = np.linalg.inv((idmat+self.delt*self.amat))
         return np.dot(invmat,ugrid[1:-1]-self.bcvec*self.delt)
 
     def _explicit_timestep():
@@ -64,9 +63,13 @@ class parabolic1d():
     def setup(self):
         self._setup_xgrid()
         self._setup_ugrid()
-        self._setup_matrices()
+        self.amat = self._centdiffd2mat() * self.k/(self.delx**2)
+        self.bcvec = self._genbcvec() * (self.k/self.delx**2)
     
     def solve(self,delt,ufper,method='implicit',maxtsteps = 50000):
+
+        if not (1 < delt <= 100): raise ValueError('Time step must be between 1 and 100')
+        if not (.05 < ufper <= .95): raise ValueError('Percent decrease in temperature must be between 0.5 and 0.95')
         
         self.delt = delt
         self.ufper = ufper
@@ -80,8 +83,8 @@ class parabolic1d():
         while ((self.uf-self.uo)/(self.uto-self.uo) > ufper) and (self.i<maxtsteps):
 
             ugrid1 = ugrid0
-            uf= ugrid0[-2] #no flow boundary
-            ugrid1[-1] = uf
+            self.uf= ugrid0[-2] #no flow boundary
+            ugrid1[-1] = ugrid0[-2]
             self.bcvec = self._genbcvec() * (self.k/self.delx**2)
             ugrid1[1:-1] = self._implicit_timestep(ugrid0)
             ugrid0=ugrid1
@@ -90,3 +93,16 @@ class parabolic1d():
 
         self.ugrid_out = ugrid_out
 
+if __name__ == "__main__":
+    p = parabolic1d(3,1,1,100,50)
+    p.setup()
+    p.solve(50,.5)
+    #print(p.ugrid_out.shape)
+    #print(len(p.ugrid_out))
+    #print(all([all([x1 <= x2 for x1, x2 in zip(tslice,tslice[1:])]) for tslice in p.ugrid_out]))
+
+    for tslice in p.ugrid_out:
+        print(tslice)
+        #print([x1 <= x2 for x1, x2 in zip(tslice,tslice[1:])])
+        print(tslice[-1])
+        print(tslice[-2])
