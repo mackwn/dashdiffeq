@@ -3,18 +3,19 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import numpy as np
-from parabolic1d_implicit import parab1dimp
+#from parabolic1d_implicit import parab1dimp
+from diffeq.parabolic import parabolic1d
 from dash.dependencies import Input, Output 
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
-print('imported dependencies')
-print('import navbar')
+#print('imported dependencies')
+#print('import navbar')
 from navbar import navbar
-print('import helpers')
+#print('import helpers')
 from helpers import render_slider
-print('import app')
+#print('import app')
 from app import app
-print('imported everything for app1dpar')
+#print('imported everything for app1dpar')
 
 initial_condition_labels = {#label:[min,max,symbol,unit]
     'uox1d_per':[5,90,'u(x=x,t=0)','%'],
@@ -28,11 +29,11 @@ grid_setup_labels = {
     'tsteps':[10,30,'delt','s']
 }
 
-print('made it past slide settings in app1dpar')
+#print('made it past slide settings in app1dpar')
 #initla simulation based on default parm settings
 parms = [(value[0]+value[1])/2 for key,value in initial_condition_labels.items()]+[
     (value[0]+value[1])/2 for key,value in grid_setup_labels.items()]
-print('made it past parms list')
+#print('made it past parms list')
 uox1d_per,ui,cond1d,xlength,xsteps,tspan,tstep = parms
 print('made it past assign parms')
 # try:
@@ -45,12 +46,13 @@ print('made it past assign parms')
 #     ugrid = xgrid
     
 
-print('made it past set up in 1dpar')
+#print('made it past set up in 1dpar')
 
 def render_line_graph(xgrid,ugrid,tstep):
     #break the simulation output into 20 steps
-    print('start rendering line graph')
-    tframes = list(range(0,len(ugrid[:,0]),int(len(ugrid[:,0])/20)))
+    #print('start rendering line graph')
+    if len(ugrid) > 20: tframes = list(range(0,len(ugrid[:,0]),int(len(ugrid[:,0])/20)))
+    else: tframes = list(range(0,len(ugrid[:,0]),1))
     figure = go.Figure(
         data = go.Scatter(
             #tframes = list(range(0,len(ugrid[:,0]),len(ugrid[:,0])/20))
@@ -71,7 +73,7 @@ def render_line_graph(xgrid,ugrid,tstep):
         #animation frames
         frames = [go.Frame(data=[go.Scatter(x=xgrid,y=ugrid[tframe,:])],name=str(t)) for t,tframe in enumerate(tframes)]
     )
-    print('animation frames assigned')
+    #print('animation frames assigned')
     #Play and pause button 
     ###using gapminder example as template https://plotly.com/python/v3/gapminder-example/
     figure['layout']['updatemenus'] = [
@@ -100,7 +102,7 @@ def render_line_graph(xgrid,ugrid,tstep):
         'yanchor': 'top'
     }
     ]
-    print('menu buttons done')
+    #print('menu buttons done')
     #Generate slider steps
     steps = [
     {
@@ -116,7 +118,7 @@ def render_line_graph(xgrid,ugrid,tstep):
         'method':'animate'
     } for t,tframe in enumerate(tframes)
     ]
-    print('steps done')
+    #print('steps done')
     #Slider formatting
     sliders_dict = {
     'active': 0,
@@ -140,7 +142,7 @@ def render_line_graph(xgrid,ugrid,tstep):
     print('figure finished')
     return figure
 
-print('made it past render line graph')
+#print('made it past render line graph')
 layout = dbc.Container([
     navbar,
     #heading row
@@ -173,7 +175,7 @@ layout = dbc.Container([
     ])
 ])
 
-print('made it past layout')
+#print('made it past layout')
 #Call back to update the slider label with the slider value (since sliders have no tick labels)
 for slider in [key+'-slider' for key in initial_condition_labels.keys()] + [key+'-slider' for key in grid_setup_labels.keys()]:
     @app.callback(
@@ -193,8 +195,13 @@ for slider in [key+'-slider' for key in initial_condition_labels.keys()] + [key+
 def update_figure(uox1d_per,ui,cond1d,xlength,xsteps,tspan,tstep):
     #parab1dimp(xlength,delt,n,uo,uto,ufper,k)
     #print("initiate solver")
-    xgrid,ugrid = parab1dimp(xlength=xlength,delt=tstep,n=xsteps,uo_per=uox1d_per/100,uto=ui,ufper=tspan/100,k=cond1d)
+    p = parabolic1d(n=xsteps,xlength=xlength,uo=uox1d_per/100*ui,uto=ui,k=cond1d)
+    p.setup()
+    p.solve(delt=tstep,ufper=tspan/100)
+
+    #xgrid,ugrid = parab1dimp(xlength=xlength,delt=tstep,n=xsteps,uo_per=uox1d_per/100,uto=ui,ufper=tspan/100,k=cond1d)
     #print("solver finished")
-    return render_line_graph(xgrid,ugrid,tstep) 
+    #return render_line_graph(xgrid,ugrid,tstep) 
+    return render_line_graph(p.xgrid,p.ugrid_out,tstep=tstep)
     
 print('made it past callbacks in app1dpar')

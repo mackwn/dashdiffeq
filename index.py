@@ -4,24 +4,18 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import os
-
-print('import server')
 from app import app, server
-print('import from module')
 from apps import app2del, app1dpar
-print('import about')
 import about
 
 
-
-print('made it into index, server assigned')
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     html.Div(id='page-content')
 ])
 
-print('assigned layout')
+
 #print('url:')
 
 @app.callback(Output('page-content','children'),
