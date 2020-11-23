@@ -3,4 +3,7 @@ venv
 .DS_Store
 .env
 .vscode
+__pycache__
 archive
+.vscode
+.vscode/settings.json
